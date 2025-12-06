@@ -14,14 +14,13 @@ A quiet accountability mirror. Like having a friend with a good memory who liste
 ## Install
 
 ```bash
-# With pip
-pip install keel-cli
-
-# Or clone and install
-git clone https://github.com/vibecoderr/keel
+# Clone and install
+git clone https://github.com/cloudgamble/keel
 cd keel
 pip install -e .
 ```
+
+Coming soon: `pip install keel-cli` and `brew install cloudgamble/tap/keel`
 
 ## Setup
 
