@@ -48,7 +48,7 @@ def conversation_loop(config: dict[str, Any]) -> None:
         if not user_input:
             continue
 
-        if user_input.lower() in ("q", "quit", "exit"):
+        if user_input.lower() in ("q", "quit", "exit", "/q", "/quit", "/exit"):
             console.print("[dim]Talk later.[/dim]")
             break
 
