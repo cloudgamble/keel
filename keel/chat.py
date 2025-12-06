@@ -12,6 +12,7 @@ from rich.prompt import Prompt
 
 from keel.config import CONVERSATIONS_DIR
 from keel.context import build_context, save_conversation
+from keel.entities import update_after_conversation
 from keel.llm import chat
 from keel.prompts import SYSTEM_PROMPT
 
@@ -50,6 +51,12 @@ def conversation_loop(config: dict[str, Any]) -> None:
         # Save to today's file
         save_conversation(user_input, response)
 
+        # Extract entities in background (don't block on this)
+        try:
+            update_after_conversation(user_input, response, config)
+        except Exception:
+            pass  # Silent fail - entity extraction is nice-to-have
+
 
 def one_shot(message: str, config: dict[str, Any]) -> None:
     """Process a single message and exit."""
@@ -59,6 +66,12 @@ def one_shot(message: str, config: dict[str, Any]) -> None:
 
     # Save to today's file
     save_conversation(message, response)
+
+    # Extract entities
+    try:
+        update_after_conversation(message, response, config)
+    except Exception:
+        pass
 
 
 def process_message(user_input: str, config: dict[str, Any]) -> str:
