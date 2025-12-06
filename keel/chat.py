@@ -14,7 +14,7 @@ from keel.config import CONVERSATIONS_DIR
 from keel.context import build_context, save_conversation
 from keel.entities import update_after_conversation
 from keel.llm import chat
-from keel.prompts import SYSTEM_PROMPT
+from keel.prompts import SYSTEM_PROMPT, ENGAGE_PROMPT
 
 console = Console()
 
@@ -27,13 +27,18 @@ def get_today_file() -> Path:
 
 def conversation_loop(config: dict[str, Any]) -> None:
     """Run interactive conversation loop."""
+    mode = "keel"  # Start in keel mode
+    
     console.print()
     console.print("[dim]keel[/dim] [bold blue]What's on your mind?[/bold blue]")
-    console.print("[dim]Type 'q' to exit[/dim]\n")
+    console.print("[dim]Type 'q' to exit, '/engage' to switch modes[/dim]\n")
 
     while True:
+        prompt_color = "blue" if mode == "keel" else "green"
+        prompt_label = ">" if mode == "keel" else "engage>"
+        
         try:
-            user_input = Prompt.ask("[bold blue]>[/bold blue]")
+            user_input = Prompt.ask(f"[bold {prompt_color}]{prompt_label}[/bold {prompt_color}]")
         except (KeyboardInterrupt, EOFError):
             console.print("\n[dim]Talk later.[/dim]")
             break
@@ -45,11 +50,22 @@ def conversation_loop(config: dict[str, Any]) -> None:
             console.print("[dim]Talk later.[/dim]")
             break
 
-        response = process_message(user_input, config)
+        # Mode switching
+        if user_input.lower() in ("/engage", "/e"):
+            mode = "engage"
+            console.print("[green]Engage mode.[/green] [dim]Let's work on something. /keel to switch back.[/dim]\n")
+            continue
+        
+        if user_input.lower() in ("/keel", "/k"):
+            mode = "keel"
+            console.print("[blue]Keel mode.[/blue] [dim]Listening. /engage to switch.[/dim]\n")
+            continue
+
+        response = process_message(user_input, config, mode=mode)
         console.print()
 
         # Save to today's file
-        save_conversation(user_input, response)
+        save_conversation(user_input, response, mode=mode)
 
         # Extract entities in background (don't block on this)
         try:
@@ -74,13 +90,16 @@ def one_shot(message: str, config: dict[str, Any]) -> None:
         pass
 
 
-def process_message(user_input: str, config: dict[str, Any]) -> str:
+def process_message(user_input: str, config: dict[str, Any], mode: str = "keel") -> str:
     """Process a user message and return the response."""
     # Build context with history
     context = build_context(config)
 
+    # Select prompt based on mode
+    system_prompt = SYSTEM_PROMPT if mode == "keel" else ENGAGE_PROMPT
+
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT + "\n\n" + context},
+        {"role": "system", "content": system_prompt + "\n\n" + context},
         {"role": "user", "content": user_input},
     ]
 

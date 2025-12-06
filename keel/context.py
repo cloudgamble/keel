@@ -118,12 +118,13 @@ def load_recent_conversations(days: int = 3) -> str:
     return "\n\n".join(reversed(conversations))  # Oldest first
 
 
-def save_conversation(user_input: str, response: str) -> None:
+def save_conversation(user_input: str, response: str, mode: str = "keel") -> None:
     """Append conversation to today's file."""
     today_file = CONVERSATIONS_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.md"
 
     timestamp = datetime.now().strftime("%H:%M")
-    entry = f"\n## {timestamp}\n\n**You:** {user_input}\n\n**Keel:** {response}\n"
+    mode_label = "Keel" if mode == "keel" else "Engage"
+    entry = f"\n## {timestamp}\n\n**You:** {user_input}\n\n**{mode_label}:** {response}\n"
 
     with open(today_file, "a") as f:
         f.write(entry)
