@@ -55,6 +55,32 @@ keel --models
 keel --forget
 ```
 
+## Two Modes
+
+Keel has two modes that share the same context:
+
+| Mode | What it does | Prompt |
+|------|--------------|--------|
+| **keel** | Reflects, stops, no agenda | Blue `>` |
+| **engage** | Actively helps - brainstorms, drafts, strategizes | Green `engage>` |
+
+Switch modes inline:
+```
+> feeling stuck on promoting my app
+[reflects, bullets, stops]
+
+> /engage
+Engage mode. Let's work on something.
+
+engage> help me come up with a visibility strategy
+[actually helps, gives concrete ideas, drafts tweets]
+
+engage> /keel
+Keel mode. Listening.
+```
+
+**keel** is the mirror. **engage** is the collaborator. Same context, different contract.
+
 ## How It Works
 
 Keel saves conversations to `~/.keel/conversations/` as daily markdown files. It builds invisible context about people, things, and patterns you mention - but never shows you a list or dashboard.
