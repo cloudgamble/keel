@@ -123,7 +123,8 @@ def save_conversation(user_input: str, response: str, mode: str = "keel") -> Non
     today_file = CONVERSATIONS_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.md"
 
     timestamp = datetime.now().strftime("%H:%M")
-    mode_label = "Keel" if mode == "keel" else "Engage"
+    mode_labels = {"keel": "Keel", "engage": "Engage", "push": "Push"}
+    mode_label = mode_labels.get(mode, "Keel")
     entry = f"\n## {timestamp}\n\n**You:** {user_input}\n\n**{mode_label}:** {response}\n"
 
     with open(today_file, "a") as f:

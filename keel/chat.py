@@ -14,7 +14,7 @@ from keel.config import CONVERSATIONS_DIR
 from keel.context import build_context, save_conversation
 from keel.entities import update_after_conversation
 from keel.llm import chat
-from keel.prompts import SYSTEM_PROMPT, ENGAGE_PROMPT
+from keel.prompts import SYSTEM_PROMPT, ENGAGE_PROMPT, PUSH_PROMPT
 
 console = Console()
 
@@ -34,8 +34,10 @@ def conversation_loop(config: dict[str, Any]) -> None:
     console.print("[dim]Type 'q' to exit, '/engage' to switch modes[/dim]\n")
 
     while True:
-        prompt_color = "blue" if mode == "keel" else "green"
-        prompt_label = ">" if mode == "keel" else "engage>"
+        prompt_colors = {"keel": "blue", "engage": "green", "push": "red"}
+        prompt_labels = {"keel": ">", "engage": "engage>", "push": "push>"}
+        prompt_color = prompt_colors[mode]
+        prompt_label = prompt_labels[mode]
         
         try:
             user_input = Prompt.ask(f"[bold {prompt_color}]{prompt_label}[/bold {prompt_color}]")
@@ -53,12 +55,17 @@ def conversation_loop(config: dict[str, Any]) -> None:
         # Mode switching
         if user_input.lower() in ("/engage", "/e"):
             mode = "engage"
-            console.print("[green]Engage mode.[/green] [dim]Let's work on something. /keel to switch back.[/dim]\n")
+            console.print("[green]Engage mode.[/green] [dim]Let's work on something.[/dim]\n")
             continue
         
         if user_input.lower() in ("/keel", "/k"):
             mode = "keel"
-            console.print("[blue]Keel mode.[/blue] [dim]Listening. /engage to switch.[/dim]\n")
+            console.print("[blue]Keel mode.[/blue] [dim]Listening.[/dim]\n")
+            continue
+        
+        if user_input.lower() in ("/push", "/p"):
+            mode = "push"
+            console.print("[red]Push mode.[/red] [dim]Tell me what to do. I'll break it down.[/dim]\n")
             continue
 
         response = process_message(user_input, config, mode=mode)
@@ -96,7 +103,8 @@ def process_message(user_input: str, config: dict[str, Any], mode: str = "keel")
     context = build_context(config)
 
     # Select prompt based on mode
-    system_prompt = SYSTEM_PROMPT if mode == "keel" else ENGAGE_PROMPT
+    prompts = {"keel": SYSTEM_PROMPT, "engage": ENGAGE_PROMPT, "push": PUSH_PROMPT}
+    system_prompt = prompts[mode]
 
     messages = [
         {"role": "system", "content": system_prompt + "\n\n" + context},

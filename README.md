@@ -55,14 +55,15 @@ keel --models
 keel --forget
 ```
 
-## Two Modes
+## Three Modes
 
-Keel has two modes that share the same context:
+Keel has three modes that share the same context:
 
 | Mode | What it does | Prompt |
 |------|--------------|--------|
 | **keel** | Reflects, stops, no agenda | Blue `>` |
-| **engage** | Actively helps - brainstorms, drafts, strategizes | Green `engage>` |
+| **engage** | Collaborates - brainstorms, drafts, strategizes | Green `engage>` |
+| **push** | Directs - tells you exactly what to do, step by step | Red `push>` |
 
 Switch modes inline:
 ```
@@ -73,13 +74,26 @@ Switch modes inline:
 Engage mode. Let's work on something.
 
 engage> help me come up with a visibility strategy
-[actually helps, gives concrete ideas, drafts tweets]
+[brainstorms, asks questions, explores options]
 
-engage> /keel
-Keel mode. Listening.
+engage> /push
+Push mode. Tell me what to do. I'll break it down.
+
+push> I need to post about keel
+Here's what you're doing:
+1. Open X
+2. Type: "built a CLI for people who are great at work and terrible at their own life"
+3. Add the github link in a reply
+4. Post it
+
+That's it. Go. Stuck on a step? Ask.
 ```
 
-**keel** is the mirror. **engage** is the collaborator. Same context, different contract.
+- **keel** is the mirror
+- **engage** is the collaborator
+- **push** is the drill sergeant
+
+Same context, different contract.
 
 ## How It Works
 
